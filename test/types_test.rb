@@ -100,6 +100,7 @@ describe Slop::ArrayOption do
     @multi   = @options.array "-M", delimiter: nil
     @delim   = @options.array "-d", delimiter: ":"
     @limit   = @options.array "-l", limit: 2
+    @defval  = @options.array "--foo", default: 'bar'
     @result  = @options.parse %w(--files foo.txt,bar.rb)
   end
 
@@ -129,6 +130,20 @@ describe Slop::ArrayOption do
   it "can use a custom limit" do
     @result.parser.parse %w(-l foo,bar,baz)
     assert_equal ["foo", "bar,baz"], @result[:l]
+  end
+
+  describe "#metavar" do
+    it "will use ellipsis to denote multiple arguments" do
+      assert_equal "FILES[,FILES...]", @files.metavar
+    end
+
+    it "can use a custom delimiter" do
+      assert_equal "D[:D...]", @delim.metavar
+    end
+
+    it "will be surrounded by square brackets if it has a default" do
+      assert_equal "[FOO[,FOO...]]", @defval.metavar
+    end
   end
 end
 
