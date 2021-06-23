@@ -53,7 +53,7 @@ module Slop
         if default_value
           @value = default_value
         elsif !suppress_errors?
-          raise Slop::MissingArgument.new("missing argument for #{flag}", flags)
+          on_error.call(Slop::MissingArgument.new("missing argument for #{flag}", flags))
         end
       else
         @value = call(value)
@@ -67,6 +67,16 @@ module Slop
     def call(_value)
       raise NotImplementedError,
         "you must override the `call' method for option #{self.class}"
+    end
+
+    # Assign the on_error block.
+    def on_error=(value)
+      config[:on_error] = value
+    end
+
+    # Return the on_error block.
+    def on_error
+      config.fetch(:on_error)
     end
 
     # By default this method does nothing. It's called when all options
